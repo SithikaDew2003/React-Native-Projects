@@ -1,13 +1,30 @@
-import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
+import { Animated, Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import "../../global.css"
 import Circle from "../components/CircleShape";
+import { useEffect, useRef } from "react";
+
 export default function SplashScreen() {
+
+    let fadeIn = useRef(new Animated.Value(0)).current;
+    useEffect(()=>{
+        Animated.timing(fadeIn,{
+            
+            toValue:1,
+            duration:3000,
+            useNativeDriver:true
+            
+        }).start();
+    },[fadeIn]);//fadeIn eke value ekak change weddi useEffect eka wada krnwa
+
     return (
         <SafeAreaView className="flex-1">
-            <StatusBar hidden={true} />
+            
             <View className="flex-1 items-center justify-center bg-white">
-                <Image className="w-40 h-40" source={require('../../assets/logo.png')} />
+                <Animated.View>
+                    <Image className="w-40 h-40" source={require('../../assets/logo.png')} />
+                    <StatusBar hidden={true} />
+                </Animated.View>
                 <View style={styles.bottomContainer}>
                     <Text style={styles.companyName}>Powered By: {process.env.EXPO_PUBLIC_APP_OWNER}</Text>
                     <Text style={styles.appVersion}>Version: {process.env.EXPO_PUBLIC_APP_VERSION}</Text>
