@@ -4,8 +4,9 @@ import { View } from "react-native";
 interface Circle{
     width: number;
     height: number;
-    fillColor:string;
     borderRadius: number;
+    className?: string;
+    fillColor?:string;
     top?: number;    // Optional property 
     left?: number;
     right?: number;
@@ -13,19 +14,20 @@ interface Circle{
 }
 
 
-export default function Circle({width,height,fillColor,borderRadius,top,left,right,bottom}:Circle){
+export default function Circle(c:Circle){
     return(
-        <View style={{
-            width:width,
-            height:height,
-            backgroundColor:fillColor,
-            borderRadius:borderRadius,
+        <View className={`${c.className ?? ""}`} //class name eka thiyenawanam ganna nathnm empty krnna
+         style={{
+            width:c.width,
+            height:c.height,
+            borderRadius:c.borderRadius,
             position:"absolute",
 
-            ...(top !== undefined && {top:top}),
-            ...(left !== undefined && {left:left}),
-            ...(right !== undefined && {right:right}),
-            ...(bottom !== undefined && {bottom:bottom}),
+            ...(c.fillColor !== undefined && {backgroundColor:c.fillColor}),
+            ...(c.top !== undefined && {top:c.top}),
+            ...(c.left !== undefined && {left:c.left}),
+            ...(c.right !== undefined && {right:c.right}),
+            ...(c.bottom !== undefined && {bottom:c.bottom}),
             }}>
             
         </View>
