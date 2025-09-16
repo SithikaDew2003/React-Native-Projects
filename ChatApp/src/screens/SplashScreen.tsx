@@ -3,15 +3,30 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import "../../global.css"
 import Circle from "../components/CircleShape";
 import { use, useEffect, useRef } from "react";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootParmList } from "../../App";
 
-export default function SplashScreen() {
+
+type SplashScreenProps = NativeStackNavigationProp<RootParmList,"SplashScreen">;
+
+export  function SplashScreen() {
 
    const opacity = useSharedValue(0);
-
+   const navigation = useNavigation<SplashScreenProps>();
    useEffect(() => {
-       opacity.value = withTiming(1,{duration:3000})
-   },[]);
+       opacity.value = withTiming(1,{duration:3000});
+
+       const timer = setTimeout(()=>{
+           navigation.navigate("SignUpScreen");
+       },3000);
+
+
+       return()=>{
+        clearTimeout(timer);
+       }
+   },[navigation,opacity]);
 
    const animationStyle = useAnimatedStyle(()=>{
     return{opacity:opacity.value}
