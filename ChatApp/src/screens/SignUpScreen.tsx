@@ -13,7 +13,7 @@ export function SignUpScreen() {
     const logo = applied === "dark" ? require("../../assets/logo-dark.png") : require("../../assets/logo.png");
     return (
         <AlertNotificationRoot>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? "padding" : "height"} className="flex-1 justify-center items-center dark:bg-black">
+            <KeyboardAvoidingView behavior={Platform.OS === 'android' ? "padding" : "height"} className="flex-1 justify-center items-center dark:bg-black">
                 <SafeAreaView className=" p-5 justify-center items-center">
                     <StatusBar hidden={true} />
                     <Image source={logo} className="w-40 h-36" />
