@@ -7,6 +7,7 @@ import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootParmList } from "../../App";
+import { useTheme } from "../theme/ThemeProvider";
 
 
 type SplashScreenProps = NativeStackNavigationProp<RootParmList,"SplashScreen">;
@@ -31,12 +32,15 @@ export  function SplashScreen() {
    const animationStyle = useAnimatedStyle(()=>{
     return{opacity:opacity.value}
    });
+
+   const {applied} = useTheme();
+   const logo = applied === "dark"?require("../../assets/logo-dark.png"):require("../../assets/logo.png");
     return (
         <SafeAreaView className="flex-1">
             
-            <View className="flex-1 items-center justify-center bg-white">
+            <View className="flex-1 items-center justify-center bg-slate-50 dark:bg-black">
                 <Animated.View style={animationStyle}>
-                    <Image className="w-40 h-40" source={require('../../assets/logo.png')} />
+                    <Image className="w-40 h-40" source={logo} />
                 </Animated.View>
                     
 

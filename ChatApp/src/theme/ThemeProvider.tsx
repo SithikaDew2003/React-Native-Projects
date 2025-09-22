@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useColorScheme } from "nativewind";
+import { colorScheme, useColorScheme } from "nativewind";
 import React, { createContext, useEffect } from "react";
+import { ActivityIndicator } from "react-native";
+
 
 
 export type ThemeOption = "light" | "dark" | "system";
@@ -18,8 +20,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const {getColorScheme, setColorScheme} = useColorScheme();
-    const [getPreference, setPreference] = React.useState<ThemeOption>("system");
+    const { colorScheme, setColorScheme } = useColorScheme();
+    const [getPreferenceState, setPreferenceState] = React.useState<ThemeOption>("system");
     const [isReady, setReady] = React.useState(false);
 
 
@@ -28,10 +30,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             try {
                 const savedTheme = await AsyncStorage.getItem(THEME_KEY);
                 if (savedTheme === "light" || savedTheme === "dark") {
-                    setPreference(savedTheme);
+                    setPreferenceState(savedTheme);
                     setColorScheme(savedTheme);
                 } else {
-                    setPreference("system");
+                    setPreferenceState("system");
                     setColorScheme("system");
                 }
             } catch (error) {
@@ -39,7 +41,54 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             } finally {
                 setReady(true);
             }
-        });
+        })();
 
-    },[setColorScheme]);
+    }, [setColorScheme]);
+
+
+    const setPreference = async (themeOption: ThemeOption) => {
+        try {
+            if (themeOption === "system") {
+                await AsyncStorage.removeItem(THEME_KEY);
+                setPreferenceState("system");
+                setColorScheme("system");
+            } else {
+                await AsyncStorage.setItem(THEME_KEY, themeOption);
+                setPreferenceState(themeOption);
+                setColorScheme(themeOption);
+            }
+        } catch (error) {
+            console.log("failed to save theme:" + error);
+        }
+    };
+
+
+
+    if (!isReady) {
+        return <ActivityIndicator style={{ flex: 1 }} />
+    }
+
+
+    return(
+        <ThemeContext.Provider value={{
+            preference: getPreferenceState,
+            applied: colorScheme ??"light",
+            setPreference,
+        }}>
+            {children}
+
+        </ThemeContext.Provider>
+    );
+}
+
+
+
+export function useTheme(){
+    const ctx = React.useContext(ThemeContext);
+    
+    if (!ctx) {
+        throw new Error("useTheme must be used within a ThemeProvider");
+    }
+
+    return ctx;
 }
