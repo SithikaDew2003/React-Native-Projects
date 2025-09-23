@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import "../../global.css";
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
-import { CountryItem, CountryPicker } from "react-native-country-codes-picker";
+import CountryPicker,{Country,CountryCode} from "react-native-country-picker-modal"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootParmList } from "../../App";
 import { useNavigation } from "@react-navigation/native";
@@ -11,8 +11,10 @@ import { useNavigation } from "@react-navigation/native";
 
 type ContactScreenProps = NativeStackNavigationProp<RootParmList, "ContactScreen">
 export function ContactScreen() {
-    const [show, setShow] = useState(false);
-    const [countryCode, setCountryCode] = useState<CountryItem | null>(null);
+    
+    const [countryCode, setCountryCode] = useState<CountryCode>("LK");//default country code
+    const[country,setCountry] =useState<Country|null>(null);
+    const [show, setShow] = useState<boolean>(false);
     const navigation = useNavigation<ContactScreenProps>();
     return (
         <SafeAreaView className="bg-red-100 flex-1 items-center">
@@ -27,43 +29,38 @@ export function ContactScreen() {
                     </View>
 
                     <View className="mt-5 w-full ">
-                        <Pressable className="w-full mt-8 border-b-4 border-b-green-600 rounded-md h-16 justify-center items-center flex-row"
-                            onPress={() => {
-                                setShow(true);
-                            }}
-                        >
-                            <Text className="text-center font-bold">Select Country<AntDesign name="caret-down" size={18} color="black" /></Text>
 
-                        </Pressable>
-
-                        <CountryPicker style={{
-                            modal: {
-                                height: 400,
-                                width: 300,
-                                alignSelf: "center",
-                                marginBottom: 20
-                            }
-                        }}
-                            show={show}
-                            lang={'en'}
-                            pickerButtonOnPress={(item) => {
-                                setCountryCode(item);
-                                setShow(false);
-                            }}
-
-
+                        <View className="border-b-2 border-b-green-600 justify-center items-center h-14 my-3 flex-row">
+                            <CountryPicker
+                            countryCode={countryCode}
+                            withFilter
+                            withFlag
+                            withCountryNameButton
+                            withCallingCode
+                            visible={show}
+                            onClose={() => {setShow(false)}}
+                            onSelect={(c)=>{
+                                    setCountryCode(c.cca2);
+                                    setCountry(c);
+                                    setShow(false);
+                            }}      
                         />
+                        <AntDesign name="caret-down" size={18} color="black" />
+                        </View>
 
+                        
+                        
+                        
                         <View className="mt-5 bg-red-100 flex flex-row justify-center">
                             <View className="bg-slate-50">
-                                <TextInput inputMode="tel" className="h-14 font-bold text-lg border-y-4 border-y-green-600 w-50 pe-1" placeholder="+94" />
+                                <TextInput inputMode="tel" className="h-14 font-bold text-lg border-y-4 border-y-green-600 w-50 pe-1" placeholder="+94" value={country? `+${country.callingCode}`:`+94`} editable={false}/>
                             </View>
-                            <TextInput inputMode="tel" cursorColor={"green"}  className="h-14 font-bold text-lg border-y-4 border-y-green-600 w-80 ps-1 ml-3" placeholder="777777777" />
+                              <TextInput inputMode="tel" cursorColor={"green"}  className="h-14 font-bold text-lg border-y-4 border-y-green-600 w-80 ps-1 ml-3" placeholder="777777777" />
                         </View>
                     </View>
 
                     <View className="mt-5">
-                        <Pressable onPress={()=>{navigation.navigate("AvatarScreen")}} className="justify-center items-center bg-green-600 w-full h-14 rounded-full">
+                        <Pressable onPress={()=>{navigation.navigate("AvatarScreen")}} className="justify-center items-center bg-green-600 w-96 h-14 rounded-md">
                             <Text className="text-xl font-bold text-slate-100">Next</Text>
                         </Pressable>
                     </View>

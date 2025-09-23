@@ -30,7 +30,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="ContactScreen" screenOptions={{ headerShown: false, animation: "flip" }}>
+        <Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: false, animation: "flip" }}>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="SignInScreen" component={SignInScreen} />
           <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
