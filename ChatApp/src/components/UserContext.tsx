@@ -34,7 +34,7 @@ export const UserRegistrationProvider : React.FC<{children:React.ReactNode}> = (
 
 
 
-export const useUseRegistration = ():UserRegistrationContextType=>{
+export const useUserRegistration = ():UserRegistrationContextType=>{
     const ctx =useContext(UserRegistrationContext);
 
     if (!ctx) {
