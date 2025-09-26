@@ -1,8 +1,10 @@
-import { FlatList, Image, Pressable, StatusBar, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Image, Pressable, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker"
 import { useState } from "react";
 import { useUserRegistration } from "../components/UserContext";
+import { validateprofileImage } from "../util/Validation";
+import { createNewAccount } from "../api/UserService";
 
 export function AvatarScreen() {
 
@@ -88,10 +90,20 @@ export function AvatarScreen() {
                 </View>
 
                 <View className=" mt-5 w-full px-5">
-                    <Pressable className="h-14 bg-green-500 justify-center items-center rounded-full" onPress={() => {
+                    <Pressable className="h-14 bg-green-500 justify-center items-center rounded-full" onPress={async() => {
+                        
+                        const validProfile = validateprofileImage(
+                            userData.profileImage
+                            ?{uri:userData.profileImage,type:"",fileSize:0} :null
+                        );
 
+                        if (validProfile) {
+                            Alert.alert("Warning","Please select profile image or avatar");
+                        }else{
+                            await createNewAccount(userData);
+                        }
 
-                        console.log(userData);
+                        
                     }}>
                         <Text className="font-bold text-lg text-slate-50">Create Account</Text>
                     </Pressable>
