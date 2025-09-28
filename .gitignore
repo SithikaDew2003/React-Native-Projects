@@ -2,3 +2,6 @@
 /Backends/BackendApi/build/
 /Backends/ChatApp/nbproject/private/
 /Backends/ChatApp/build/
+/Backends/BlinkChat/nbproject/private/
+/Backends/BlinkChat/build/
+/Backends/BlinkChat/dist/

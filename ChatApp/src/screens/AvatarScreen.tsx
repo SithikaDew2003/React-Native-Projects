@@ -1,13 +1,20 @@
-import { Alert, FlatList, Image, Pressable, StatusBar, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, ActivityIndicatorBase, Alert, FlatList, Image, Pressable, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker"
 import { useState } from "react";
 import { useUserRegistration } from "../components/UserContext";
 import { validateprofileImage } from "../util/Validation";
 import { createNewAccount } from "../api/UserService";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootParmList } from "../../App";
+import { useNavigation } from "@react-navigation/native";
 
+
+type AvatarScreenProps = NativeStackNavigationProp<RootParmList, "AvatarScreen">;
 export function AvatarScreen() {
 
+    const navigation = useNavigation<AvatarScreenProps>();
+    const [loading, setLoading] = useState(false);
     const [image, setImage] = useState<string | null>(null);
     const { userData, setUserData } = useUserRegistration();
     const pickImage = async () => {
@@ -90,22 +97,42 @@ export function AvatarScreen() {
                 </View>
 
                 <View className=" mt-5 w-full px-5">
-                    <Pressable className="h-14 bg-green-500 justify-center items-center rounded-full" onPress={async() => {
-                        
+                    <Pressable disabled={loading?true:false} className="h-14 bg-green-500 justify-center items-center rounded-full" onPress={async () => {
+
                         const validProfile = validateprofileImage(
                             userData.profileImage
-                            ?{uri:userData.profileImage,type:"",fileSize:0} :null
+                                ? { uri: userData.profileImage, type: "", fileSize: 0 } : null
                         );
 
                         if (validProfile) {
-                            Alert.alert("Warning","Please select profile image or avatar");
-                        }else{
-                            await createNewAccount(userData);
+                            Alert.alert("Warning", "Please select profile image or avatar");
+                        } else {
+                           
+
+                            try {
+                                 setLoading(true);
+                                const response = await createNewAccount(userData);
+                                if (response.status) {
+                                    navigation.replace("HomeScreen");
+                                } else {
+                                   Alert.alert("Error",response.message);
+                                }
+                            } catch (error) {
+                                console.log(error);
+                            }finally{
+                                setLoading(false);
+                            }
+
+
                         }
 
-                        
+
                     }}>
-                        <Text className="font-bold text-lg text-slate-50">Create Account</Text>
+                        {
+                            loading ? (<ActivityIndicator size={'large'} color={'green'} />) : (
+
+
+                                <Text className="font-bold text-lg text-slate-50">Create Account</Text>)}
                     </Pressable>
                 </View>
             </View>
