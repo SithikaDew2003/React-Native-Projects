@@ -18,10 +18,6 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import util.HibernateUtil;
 
-/**
- *
- * @author sithi
- */
 @ServerEndpoint(value = "/chat")
 public class ChatEndPoint {
 
@@ -31,59 +27,56 @@ public class ChatEndPoint {
     @OnOpen
     public void onOpen(Session session) {
         String query = session.getQueryString();
-
         if (query != null && query.startsWith("userId=")) {
             userId = Integer.parseInt(query.substring("userId=".length()));
             ChatService.register(userId, session);
-            ChatService.SendToUser(userId,
+            ChatService.sendToUser(userId,
                     ChatService.friendListEnvelope(ChatService.getFriendChatsForUser(userId)));
-
         }
     }
-    
+
     @OnClose
     public void onClose(Session session) {
-        if (userId>=0) { //userId!=null
+        if (userId >= 0) { // userId != null
             ChatService.unregister(userId);
-            
         }
     }
-    
-    
+
     @OnError
-    public void onError(Session session,Throwable throwable){
+    public void onError(Session session, Throwable throwable) {
         throwable.printStackTrace();
     }
-    
+
     @OnMessage
-    public void onMessage(String message,Session session){
+    public void onMessage(String message, Session session) {
         try {
-            Map<String,Object>map = ChatEndPoint.GSON.fromJson(message,Map.class);
+            Map<String,Object> map = ChatEndPoint.GSON.fromJson(message, Map.class);
             String type = (String)map.get("type");
-            
             switch (type) {
                 case "send_chat":
-                    int fromId =(int)map.get("fromId");
-                    int toId =(int)map.get("toId");
-                    
-                    String chatText =(String)map.get("message");
+                    int fromId = (int)map.get("fromId");
+                    int toId = (int)map.get("toId");
+                    String chatText = (String)map.get("message");
                     org.hibernate.Session s = HibernateUtil.getSessionFactory().openSession();
+                    Users fromUser = (Users)s.get(Users.class, fromId);
+                    Users toUser = (Users)s.get(Users.class, toId);
                     
-                    Users fromUser = (Users)s.get(Users.class,fromId);
-                    Users toUser =(Users)s.get(Users.class,toId);
-                    
-                    
-                    if (fromUser!=null && toUser!=null) {
-                        Chat chat = new Chat(fromUser, message, toUser,"", Status.SENT);
+                    if(fromUser != null && toUser!=null){
+                        Chat chat = new Chat(fromUser, chatText, toUser, "", Status.SENT);
                         chat.setCreatedAt(new Date());
                         chat.setUpdatedAt(new Date());
-                        
                         ChatService.deliverChat(chat);
                     }
+                    break;
+                case "get_chat_list":
+                    System.out.println("get_chat_list");
+                    ChatService.register(userId, session);
+//            ChatService.sendToUser(userId,
+//                    ChatService.friendListEnvelope(ChatService.getFriendChatsForUser(userId)));
                     
                     break;
                 default:
-                    throw new AssertionError();
+                    System.out.println("Ignored unknown clientside"+type);
             }
         } catch (Exception e) {
             e.printStackTrace();

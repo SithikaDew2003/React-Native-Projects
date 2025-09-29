@@ -2,41 +2,44 @@ package socket;
 
 import java.util.Date;
 
+/**
+ *
+ * @author Dilhara
+ */
 public class ChatSummary {
+    private int friendId;
+    private String friendName;
+    private String lastMessage;
+    private Date lastTimeStamp;
+    private int unreadCount;
+    private String profileImage;
 
-    public ChatSummary(int friendContact, String friendname, String lastMessage, Date lastSeenTime, int unreadCount, String profileImage) {
-        this.friendContact = friendContact;
-        this.friendname = friendname;
+    public ChatSummary() {
+    }
+
+    public ChatSummary(int friendId, String friendName, String lastMessage, Date lastTimeStamp, int unreadCount, String profileImage) {
+        this.friendId = friendId;
+        this.friendName = friendName;
         this.lastMessage = lastMessage;
-        this.lastSeenTime = lastSeenTime;
+        this.lastTimeStamp = lastTimeStamp;
         this.unreadCount = unreadCount;
         this.profileImage = profileImage;
     }
 
-    public ChatSummary() {
-    }
-    
-    private int friendContact;
-    private String friendname;
-    private String lastMessage;
-    private Date lastSeenTime;
-    private int unreadCount;
-    private String profileImage;
-
-    public int getFriendContact() {
-        return friendContact;
+    public int getFriendId() {
+        return friendId;
     }
 
-    public void setFriendContact(int friendContact) {
-        this.friendContact = friendContact;
+    public void setFriendId(int friendId) {
+        this.friendId = friendId;
     }
 
-    public String getFriendname() {
-        return friendname;
+    public String getFriendName() {
+        return friendName;
     }
 
-    public void setFriendname(String friendname) {
-        this.friendname = friendname;
+    public void setFriendName(String friendName) {
+        this.friendName = friendName;
     }
 
     public String getLastMessage() {
@@ -47,12 +50,12 @@ public class ChatSummary {
         this.lastMessage = lastMessage;
     }
 
-    public Date getLastSeenTime() {
-        return lastSeenTime;
+    public Date getLastTimeStamp() {
+        return lastTimeStamp;
     }
 
-    public void setLastSeenTime(Date lastSeenTime) {
-        this.lastSeenTime = lastSeenTime;
+    public void setLastTimeStamp(Date lastTimeStamp) {
+        this.lastTimeStamp = lastTimeStamp;
     }
 
     public int getUnreadCount() {
@@ -70,5 +73,6 @@ public class ChatSummary {
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
+    
     
 }

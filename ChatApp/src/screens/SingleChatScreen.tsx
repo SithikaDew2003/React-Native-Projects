@@ -41,7 +41,7 @@ const {chatId,friendName,lastSeenTime,profileImage}=route.params;
                 title:"",
                 headerLeft: () => (
                 <View className="flex-row items-center gap-2">
-                    <Image source={require("../../assets/avatar/avatar_1.png")}
+                    <Image source={{uri:profileImage}}
                     className="h-14 w-14 rounded-full"/>
                     <View className="space-y-2">
                         <Text className="font-bold text-2xl">{friendName}</Text>

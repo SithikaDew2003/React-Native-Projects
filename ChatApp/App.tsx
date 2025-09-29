@@ -15,6 +15,7 @@ import { UserRegistrationProvider } from "./src/components/UserContext";
 import HomeTabs from "./HomeTabs";
 
 import SingleChatScreen from "./src/screens/SingleChatScreen";
+import { WebSocketProvider } from "./src/socket/WebSocketProvider";
 
 
 
@@ -37,8 +38,10 @@ export type RootParmList = {
 }
 const Stack = createNativeStackNavigator<RootParmList>();
 export default function App() {
+  const userId =1;//can use async storage
   return (
-    <ThemeProvider>
+    <WebSocketProvider userId={userId}>
+      <ThemeProvider>
       <UserRegistrationProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{ animation: "flip" }}>
@@ -55,6 +58,9 @@ export default function App() {
         </NavigationContainer>
       </UserRegistrationProvider>
     </ThemeProvider>
+    </WebSocketProvider>
+    
+    
   );
 }
 
