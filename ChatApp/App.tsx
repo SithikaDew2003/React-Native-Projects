@@ -37,10 +37,11 @@ export type RootParmList = {
 
 }
 const Stack = createNativeStackNavigator<RootParmList>();
+export let USER_ID =1;//can use async storage
 export default function App() {
-  const userId =1;//can use async storage
+  
   return (
-    <WebSocketProvider userId={userId}>
+    <WebSocketProvider userId={USER_ID}>
       <ThemeProvider>
       <UserRegistrationProvider>
         <NavigationContainer>

@@ -18,11 +18,11 @@ export interface Chat{
     unreadCount:number,
     profileImage:string,
     from:User,
-
+    message:string,
     to:User,
     createdAt:string,
     updatedAt:string,
-    status:"SENT"|"DELIVERED"|"READ"
+    status:string
 };
 
 export interface WSRequest{

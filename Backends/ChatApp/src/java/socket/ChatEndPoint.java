@@ -9,6 +9,7 @@ import entity.Chat;
 import entity.Status;
 import entity.Users;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -69,10 +70,17 @@ public class ChatEndPoint {
                     }
                     break;
                 case "get_chat_list":
-                    System.out.println("get_chat_list");
-                    ChatService.register(userId, session);
-//            ChatService.sendToUser(userId,
-//                    ChatService.friendListEnvelope(ChatService.getFriendChatsForUser(userId)));
+                   
+            ChatService.sendToUser(userId,
+                    ChatService.friendListEnvelope(ChatService.getFriendChatsForUser(userId)));
+                    
+                    break;
+                    case "get_single_chat":
+                        int friendId = (int)((double)map.get("friendId"));
+                        List<Chat> chats =  ChatService.getChatHistory(userId, friendId);
+                        
+                        Map<String,Object> envelop = ChatService.singleChatEnvelope(chats);
+                        ChatService.sendToUser(userId, envelop);
                     
                     break;
                 default:

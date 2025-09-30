@@ -5,6 +5,10 @@ import { RootParmList } from "../../App";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useLayoutEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useSingleChat } from "../socket/UseSingleChat";
+import { Chat } from "../socket/chat";
+import { FormatChatTime } from "../util/DateFormatter";
+import { useSendChat } from "../socket/useSendChat";
 
 type SingleChatScreenProps = NativeStackScreenProps<RootParmList,"SingleChatScreen">
 
@@ -13,7 +17,7 @@ type Message={
     text:string;
     sender:"me"|"friend";
     time:string;
-    status:"sent"|"delivered"|"read";
+    status:"sent"|"DELIVERED"|"READ";
 };
 
 
@@ -23,16 +27,9 @@ export default function SingleChatScreen({
 }:SingleChatScreenProps) {
    
 const {chatId,friendName,lastSeenTime,profileImage}=route.params;
+ const messages=useSingleChat(chatId); //chatId==friendId
+ const sendMessage = useSendChat();
  
-
- const[message,setMessage]=useState<Message[]>([
-    {id:1,text:"Hi",sender:"me",time:"9.46 p.m",status:"read"},
-    {id:2,text:"Hi,Kohomd",sender:"friend",time:"9.47 p.m",status:"read"},
-    {id:3,text:"Mokad karanne",sender:"me",time:"9.48 p.m",status:"read"},
-    {id:4,text:"Mukuth na",sender:"friend",time:"9.49 p.m",status:"read"},
-    {id:5,text:"Hariiii",sender:"me",time:"10.00 p.m",status:"sent"},
-   
- ]);
 
  const[input,setInput]=useState("");
 
@@ -58,43 +55,36 @@ const {chatId,friendName,lastSeenTime,profileImage}=route.params;
 
 
 
- const renderItem =({item}:{item:Message})=>{
-    const isMe= item.sender ==="me";
+ const renderItem =({item}:{item:Chat})=>{
+    const isMe= item.from.id !== chatId;
     return(
 
 
         <View className={`my-1 px-3 py-2  max-w-[75%] ${isMe?"bg-green-500 self-end rounded-bl-xl rounded-tl-xl rounded-br-xl":"bg-gray-500 self-start rounded-br-xl rounded-tl-xl rounded-tr-xl"}`}>
-            <Text className={`text-white text-base ${isMe?"text-right":"text-left"}`}>{item.text}</Text>
+            <Text className={`text-white text-base ${isMe?"text-right":"text-left"}`}>{item.message}</Text>
             <View className="flex-row justify-end items-center mt-1">
-                <Text className={`text-white italic text-xs me-2`}>{item.time}</Text>
-                {isMe&&(<Ionicons name={item.status==="read"?"checkmark-done-outline":item.status==="delivered"?"checkmark-done-outline":"checkmark"} size={16} color={item.status==="read"?"blue":"gray"} />)}
+                <Text className={`text-white italic text-xs me-2`}>{FormatChatTime(item.createdAt)}</Text>
+                {isMe&&(<Ionicons name={item.status==="READ"?"checkmark-done-outline":item.status==="DELIVERED"?"checkmark-done-outline":"checkmark"} size={16} color={item.status==="READ"?"blue":"gray"} />)}
             </View>
         </View>
     );
  };
 
-    const sendMessage=()=>{
-        if (input.trim()) {
-            const newMsg:Message={
-                id:Date.now(),
-                text:input,
-                sender:"me",
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' ,hour12: true }),
-                status:"sent",
-            };
+ const handleSendChat =()=>{
+    if (!input.trim()) {
+        return;
+    }
 
-            setMessage([newMsg, ...message]);
-            setInput("");
-        }
-
-        return !input.trim();
-    };
-
+    sendMessage(chatId,input);
+    setInput("");
+ }
+    
     return (
         <SafeAreaView className="flex-1 bg-white" edges={["right","bottom","left"]}>
             <StatusBar hidden/>
             <KeyboardAvoidingView className="flex-1" behavior={Platform.OS==="android"?"padding":"height"} keyboardVerticalOffset={100}>
-                <FlatList data={message} renderItem={renderItem} contentContainerStyle={{paddingBottom:60}} className=" px-3 flex-1" inverted keyExtractor={(item)=>item.id.toString()}/>
+                <FlatList data={messages} renderItem={renderItem} contentContainerStyle={{paddingBottom:60}} className=" px-3 flex-1" inverted 
+                keyExtractor={(_,index)=>index.toString()}/>
                 <View className="flex-row  ps-2  bg-white items-end justify-end">
                     <TextInput value={input} onChangeText={(text)=>setInput(text)}
                         multiline

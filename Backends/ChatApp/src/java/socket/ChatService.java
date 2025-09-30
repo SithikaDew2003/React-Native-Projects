@@ -26,7 +26,7 @@ public class ChatService {
 
     private static final ConcurrentHashMap<Integer, Session> SESSIONS = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
-    private static final String URL = "https://7aa7b8ac1cca.ngrok-free.app"; // ngrok proxy url
+    private static final String URL = "https://06ad6db31126.ngrok-free.app"; // ngrok proxy url
 
     public static void register(int userId, Session session) {
         SESSIONS.put(userId, session);
@@ -70,8 +70,7 @@ public class ChatService {
 
                 List<Chat> chats = c1.list();
                 if (!chats.isEmpty()) {
-                    
-                
+
                     int unread = 0;
                     for (Chat c : chats) {
                         if (!c.getStatus().equals(Status.READ)) {
@@ -113,7 +112,6 @@ public class ChatService {
         sendToUser(chat.getTo().getId(), envelope);
         sendToUser(chat.getFrom().getId(), envelope);
 
-       
         sendToUser(chat.getTo().getId(), friendListEnvelope(getFriendChatsForUser(chat.getTo().getId())));
         sendToUser(chat.getFrom().getId(), friendListEnvelope(getFriendChatsForUser(chat.getFrom().getId())));
     }
@@ -139,22 +137,33 @@ public class ChatService {
                             Restrictions.eq("to.id", userId)
                     )
             ));
-            c.addOrder(Order.asc("createdAt"));
+            c.addOrder(Order.desc("createdAt"));
             List<Chat> list = c.list();
 
             Transaction tr = session.beginTransaction();
             for (Chat chat : list) {
-                if (chat.getFrom().getId() == friendId && chat.getTo().getId() == userId
-                        && chat.getStatus() == Status.SENT) {
-                    chat.setStatus(Status.DELIVERED);
+                if (chat.getFrom().getId() == friendId
+                        && chat.getTo().getId() == userId
+                        && chat.getStatus().equals(Status.DELIVERED)) {
+
+                    chat.setStatus(Status.READ);
                     session.update(chat);
+
                 }
             }
-            tr.commit();
 
+            tr.commit();
             return list;
         } finally {
             session.close();
         }
+    }
+    
+    public static Map<String,Object>singleChatEnvelope(List<Chat> chats){
+        Map<String,Object> envelope = new HashMap<>();
+        envelope.put("type", "single_chat");
+        envelope.put("payload",chats);
+        
+        return envelope;
     }
 }
