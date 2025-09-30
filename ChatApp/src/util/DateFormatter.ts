@@ -23,7 +23,7 @@ const isToday = date.getDate() === now.getDate() &&
 
 
    if (isToday) return timeStr;//11.19AM
-   if (isYesterday) return "Yesterday"; //Yesterday 11.09AM
+   if (isYesterday) return `Yesterday ${timeStr}`; //Yesterday 11.09AM
 
     return `${date.toLocaleDateString} ${timeStr}`;//2025.09.26 11.09AM
 

@@ -92,7 +92,7 @@ const {chatId,friendName,lastSeenTime,profileImage}=route.params;
                         className="flex-1 min-h-14 max-h-32 px-3 py2 bg-gray-200 rounded-3xl text-base"
                     />
 
-                    <TouchableOpacity   onPress={sendMessage} className="bg-green-600 w-14 h-14 items-center justify-center rounded-full">
+                    <TouchableOpacity   onPress={handleSendChat} className="bg-green-600 w-14 h-14 items-center justify-center rounded-full">
                         <Ionicons name="send" size={24} color="white"/>
                     </TouchableOpacity>
 

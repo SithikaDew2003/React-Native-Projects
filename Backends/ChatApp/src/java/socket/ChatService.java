@@ -9,6 +9,7 @@ import entity.Users;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -158,12 +159,53 @@ public class ChatService {
             session.close();
         }
     }
-    
-    public static Map<String,Object>singleChatEnvelope(List<Chat> chats){
-        Map<String,Object> envelope = new HashMap<>();
+
+    public static Map<String, Object> singleChatEnvelope(List<Chat> chats) {
+        Map<String, Object> envelope = new HashMap<>();
         envelope.put("type", "single_chat");
-        envelope.put("payload",chats);
-        
+        envelope.put("payload", chats);
+
         return envelope;
+    }
+
+    public static void saveNewChat(int userId, int friendId, String message) {
+
+        org.hibernate.Session s = HibernateUtil.getSessionFactory().openSession();
+        Users me = (Users) s.get(Users.class, userId);
+        Users friend = (Users) s.get(Users.class, friendId);
+
+        Chat chat = new Chat();
+        chat.setFrom(me);
+        chat.setTo(friend);
+        chat.setMessage(message);
+        chat.setCreatedAt(new Date());
+        chat.setUpdatedAt(new Date());
+        chat.setFiles("File:");
+
+        s.save(chat);
+        s.beginTransaction().commit();
+        s.close();
+
+        Map<String, Object> envelope = new HashMap();
+        envelope.put("type", "new_message");
+        envelope.put("payload", chat);
+
+        //Update both side => SingleChatScreen
+        ChatService.sendToUser(chat.getFrom().getId(), envelope);
+        ChatService.sendToUser(chat.getTo().getId(), envelope);
+
+        //Update both side=>HomeChatList
+        List<ChatSummary> fromList = ChatService.getFriendChatsForUser(chat.getFrom().getId());
+        List<ChatSummary> toList = ChatService.getFriendChatsForUser(chat.getTo().getId());
+        Map<String,Object> fromMap = ChatService.friendListEnvelope(fromList);//from
+        Map<String,Object> toMap = ChatService.friendListEnvelope(toList);//to
+        
+        
+        ChatService.sendToUser(chat.getFrom().getId(), fromMap);  //update from home chat
+        ChatService.sendToUser(chat.getTo().getId(), toMap); //update to home chat
+        
+        
+        
+        
     }
 }

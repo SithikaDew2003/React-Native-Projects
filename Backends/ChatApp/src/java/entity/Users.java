@@ -6,6 +6,8 @@ package entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,6 +34,11 @@ public class Users extends BaseEntity{
     private String countryCode;
     @Column(name="contact_no",length = 45,nullable = false,unique = true)
     private String contactNo;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name="status",length = 45)
+    private Status status = Status.ACTIVE;
+    
 
     public Users() {
     }
@@ -113,6 +120,20 @@ public class Users extends BaseEntity{
      */
     public void setContactNo(String contactNo) {
         this.contactNo = contactNo;
+    }
+
+    /**
+     * @return the status
+     */
+    public Status getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(Status status) {
+        this.status = status;
     }
     
     
