@@ -89,6 +89,9 @@ public class ChatEndPoint {
 
                     Map<String, Object> envelop = ChatService.singleChatEnvelope(chats);
                     ChatService.sendToUser(userId, envelop);
+                    
+                    ChatService.sendToUser(userId,
+                            ChatService.friendListEnvelope(ChatService.getFriendChatsForUser(userId)));
 
                     break;
                 }
