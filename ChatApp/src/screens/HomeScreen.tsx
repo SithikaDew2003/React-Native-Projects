@@ -126,16 +126,38 @@ export default function HomeScreen() {
     }, [navigation]);
 
 
-    const filteredChats =chatList.filter((chat)=>{
+    const filteredChats =[...chatList].filter((chat)=>{
        
        return (
         chat.friendName.toLowerCase().includes(search.toLowerCase())||
         chat.lastMessage.toLowerCase().includes(search.toLowerCase()));
-    });
+    }).sort((a, b) => 
+     new Date(b.lastTimeStamp).getTime() -
+     new Date(a.lastTimeStamp).getTime()
+    );
+    
 
     const renderItem =({item}:any)=>(
        <TouchableOpacity className="flex-row items-center py-2 px-3 bg-gray-100 my-1" onPress={()=>navigation.navigate("SingleChatScreen",{chatId:item.friendId,friendName:item.friendName,lastSeenTime:FormatChatTime(item.lastTimeStamp),profileImage:item.profileImage})} >
-            <Image source={{uri:item.profileImage}} className="h-20 w-20 rounded-full"/>
+            <TouchableOpacity className="items-center justify-center border-gray-300 rounded-full h-14 w-14 border-1">
+                    {
+                    
+                    
+                    item.profileImage ? (
+                        <Image
+                            source={{ uri: item.profileImage }}
+                            className="w-12 h-12 rounded-full"
+                        />
+                    ) : (
+                         <Image
+                            source={{
+                                 uri: `https://ui-avatars.com/api/?name=${item.firstName}+${item.lastName}&background=random`
+                                }}
+                            className="w-12 h-12 rounded-full"
+                        />
+
+                    )}
+                </TouchableOpacity>
             <View className="flex-1">
                 <View className="justify-between flex-row items-center">
                     <Text className="font-bold text-xl" numberOfLines={1} ellipsizeMode="tail">{item.friendName}</Text>
@@ -175,7 +197,7 @@ export default function HomeScreen() {
 
             <View className="absolute bg-green-500 bottom-24 right-10 h-20 w-20 rounded-3xl">
                 <TouchableOpacity className="h-20 w-20 rounded-3xl justify-center items-center">
-                    <Ionicons name="chatbox-ellipses" size={26} color="black" />
+                    <Ionicons onPress={()=>navigation.navigate("NewChatScreen")} name="chatbox-ellipses" size={26} color="black" />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

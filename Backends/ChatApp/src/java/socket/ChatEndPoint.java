@@ -106,6 +106,14 @@ public class ChatEndPoint {
                     
                     break;
                 }
+                
+                case "get_friend_data":{
+                    int friendId = (int) ((double) map.get("friendId"));
+                    Map<String,Object> envelope = UserService.getFriendData(friendId);
+                    
+                    ChatService.sendToUser(userId, envelope);
+                    break;
+                }
                 default:
                     System.out.println("Ignored unknown clientside" + type);
             }

@@ -8,11 +8,16 @@ export interface User{
     countryCode:string,
     contactNo:string
     profileImage?:string,
+    createdAt:string,
+    updatedAt:string,
+    status:string
 };
 
 export interface Chat{
+    id:number,
     friendId:number,
     friendName:string,
+    friendFirstName:string,
     lastMessage:string,
     lastTimeStamp:string,
     unreadCount:number,
