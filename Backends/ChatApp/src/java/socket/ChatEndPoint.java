@@ -114,6 +114,12 @@ public class ChatEndPoint {
                     ChatService.sendToUser(userId, envelope);
                     break;
                 }
+                
+                case "get_all_users":{
+                    Map<String,Object> envelope = UserService.getAllUsers(userId);
+                    ChatService.sendToUser(userId, envelope);
+                    break;
+                }
                 default:
                     System.out.println("Ignored unknown clientside" + type);
             }

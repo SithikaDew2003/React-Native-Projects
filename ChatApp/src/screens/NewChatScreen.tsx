@@ -105,12 +105,13 @@ export default function NewChatsScreen() {
                         <Text className="text-lg font-bold">New Contact</Text>
                     </TouchableOpacity>
                 </View>
-                <View className="mt-2">
+                
                     <FlatList
+                        className="mt-2"
                         data={filteredUsers}
                         renderItem={renderItem}
                         keyExtractor={(_, index) => index.toString()} />
-                </View>
+                
             </View>
 
         </SafeAreaView>

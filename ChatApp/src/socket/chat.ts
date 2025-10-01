@@ -6,7 +6,7 @@ export interface User{
     lastName:string,
  
     countryCode:string,
-    contactNo:string
+    contactNo:string,
     profileImage?:string,
     createdAt:string,
     updatedAt:string,

@@ -4,15 +4,23 @@
  */
 package socket;
 
+import dto.UserDTO;
 import entity.Chat;
 import entity.FriendList;
 import entity.Status;
 import entity.Users;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
@@ -82,17 +90,70 @@ public class UserService {
         s.close();
 
     }
-    
-    public static Map<String,Object> getFriendData(int friendId){//single chat header
+
+    public static Map<String, Object> getFriendData(int friendId) {//single chat header
         Session s = HibernateUtil.getSessionFactory().openSession();
-        Users friend = (Users)s.get(Users.class, friendId);
+        Users friend = (Users) s.get(Users.class, friendId);
         s.close();
-        
-        Map<String,Object> envelope = new HashMap<>();
-        envelope.put("type","friend_data");
-        envelope.put("payload",friend);
-        
+
+        Map<String, Object> envelope = new HashMap<>();
+        envelope.put("type", "friend_data");
+        envelope.put("payload", friend);
+
         return envelope;
+
+    }
+
+    public static Map<String, Object> getAllUsers(int userId) {
+
+        try {
+
+            Session s = HibernateUtil.getSessionFactory().openSession();
+            Criteria c1 = s.createCriteria(Users.class);
+            c1.add(Restrictions.ne("id", userId));
+            List<Users> users = c1.list();
+            Map<String, Object> map = new HashMap();
+
+            List<UserDTO> userDTOs = new ArrayList<>();
+
+            for (Users user : users) {//offline/onlne
+                Criteria c2 = s.createCriteria(FriendList.class);
+                c2.add(Restrictions.and(Restrictions.eq("friendId.id", user.getId()),
+                        Restrictions.eq("userId.id", userId),
+                        Restrictions.ne("status", Status.BLOCKED)));
+
+                FriendList u1 = (FriendList) c2.uniqueResult();//Active
+                if (u1 != null) {
+                    user.setStatus(Status.ACTIVE);//if this user already in my friend list change status to active
+                }
+
+                
+                
+                UserDTO dto = new UserDTO();
+                dto.setId(user.getId());
+                dto.setFirstName(user.getFirstName());
+                dto.setLastName(user.getLastName());
+                dto.setCountryCode(user.getCountryCode());
+                dto.setContactNo(user.getContactNo());
+                dto.setProfileImage(ProfileService.getProfileURL(user.getId()));
+                dto.setCreatedAt(user.getCreatedAt());
+                dto.setUpdatedAt(user.getUpdatedAt());
+                dto.setStatus(user.getStatus());
+                
+                userDTOs.add(dto);
+
+                
+
+            }
+
+            map.put("type", "all_users");
+            map.put("payload", userDTOs);
+
+            return map;
+
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
         
     }
 }

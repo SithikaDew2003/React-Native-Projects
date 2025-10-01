@@ -27,7 +27,7 @@ public class ChatService {
 
     private static final ConcurrentHashMap<Integer, Session> SESSIONS = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
-    private static final String URL = "https://19b0393ad090.ngrok-free.app"; // ngrok proxy url
+    public static final String URL = "https://796c40b5bef6.ngrok-free.app"; // ngrok proxy url
 
     public static void register(int userId, Session session) {
         SESSIONS.put(userId, session);
@@ -83,7 +83,7 @@ public class ChatService {
                     }
 
                     if (!map.containsKey(myFriend.getId())) {
-                        String profileImage = URL + "/ChatApp/profile-images/" + myFriend.getId() + "/profile1.png";
+                        String profileImage = ProfileService.getProfileURL(myFriend.getId());
                         map.put(myFriend.getId(), new ChatSummary(
                                 myFriend.getId(),
                                 myFriend.getFirstName() + " " + myFriend.getLastName(),
@@ -174,9 +174,39 @@ public class ChatService {
     public static void saveNewChat(int userId, int friendId, String message) {
 
         org.hibernate.Session s = HibernateUtil.getSessionFactory().openSession();
+        Transaction tr = s.beginTransaction();
         Users me = (Users) s.get(Users.class, userId);
         Users friend = (Users) s.get(Users.class, friendId);
 
+        Criteria c1 = s.createCriteria(FriendList.class);
+        //check if i have a friend
+        c1.add(Restrictions.and(Restrictions.eq("userId", me),Restrictions.eq("friendId", friend)));
+        FriendList fl1 = (FriendList)c1.uniqueResult();
+        
+        if (fl1==null) {
+            FriendList friend1 = new FriendList();
+            friend1.setFriendId(friend);
+            friend1.setUserId(me);
+            friend1.setStatus(Status.ACTIVE);
+            
+            s.save(friend1);
+            
+        }
+        
+        Criteria c2 = s.createCriteria(FriendList.class);
+        c2.add(Restrictions.and(Restrictions.eq("userId", friend),Restrictions.eq("friendId", me)));
+        FriendList fl2 = (FriendList)c2.uniqueResult();
+        
+        if (fl2==null) {
+            FriendList friend2 = new FriendList();
+            friend2.setFriendId(me);
+            friend2.setUserId(friend);
+            friend2.setStatus(Status.ACTIVE);
+            
+            s.save(friend2);
+            
+        }
+        
         Chat chat = new Chat();
         chat.setFrom(me);
         chat.setTo(friend);
@@ -186,7 +216,7 @@ public class ChatService {
         chat.setFiles("File:");
 
         s.save(chat);
-        s.beginTransaction().commit();
+        tr.commit();
         s.close();
 
         Map<String, Object> envelope = new HashMap();
