@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useChatList } from "../socket/UseChatList";
 import { FormatChatTime } from "../util/DateFormatter";
+import { Chat } from "../socket/chat";
 const chats = [
     {
         id: 1,
@@ -137,7 +138,7 @@ export default function HomeScreen() {
     );
     
 
-    const renderItem =({item}:any)=>(
+    const renderItem =({item}:{item:Chat})=>(
        <TouchableOpacity className="flex-row items-center py-2 px-3 bg-gray-100 my-1" onPress={()=>navigation.navigate("SingleChatScreen",{chatId:item.friendId,friendName:item.friendName,lastSeenTime:FormatChatTime(item.lastTimeStamp),profileImage:item.profileImage})} >
             <TouchableOpacity className="items-center justify-center border-gray-300 rounded-full h-14 w-14 border-1">
                     {
@@ -151,7 +152,7 @@ export default function HomeScreen() {
                     ) : (
                          <Image
                             source={{
-                                 uri: `https://ui-avatars.com/api/?name=${item.firstName}+${item.lastName}&background=random`
+                                 uri: `https://ui-avatars.com/api/?name=${item.friendName.replace(" ","+")}&background=random`
                                 }}
                             className="w-12 h-12 rounded-full"
                         />
