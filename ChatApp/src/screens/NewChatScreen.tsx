@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { FlatList, Image, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { User } from "../socket/chat";
+import { useUserList } from "../socket/UseUserList";
 
 type NewChatsScreenProp = NativeStackNavigationProp<RootParmList, "NewChatScreen">
 
@@ -39,30 +40,7 @@ export default function NewChatsScreen() {
     }, [navigation]);
 
     const [search, setSearch] = useState("");
-    const [users, setUsers] = useState<User[]>([
-        {
-            id: 1,
-            firstName: "Malindu",
-            lastName: "Piushan",
-            countryCode: "+94",
-            contactNo: "763060956",
-            createdAt: "2025-10-01 10:16 AM",
-            updatedAt: "2025-10-01 10:16 AM",
-            status: "ACTIVE",
-            profileImage: "https://19b0393ad090.ngrok-free.app/ChatApp/profile-images/4/profile1.png",
-        },
-        {
-            id: 1,
-            firstName: "Sahan",
-            lastName: "Perera",
-            countryCode: "+94",
-            contactNo: "763060956",
-            createdAt: "2025-10-01 10:16 AM",
-            updatedAt: "2025-10-01 10:16 AM",
-            status: "NOT_IN_LIST",
-            profileImage: "",
-        },
-    ]);
+    const users=useUserList();
     const renderItem = ({ item }: any) => (
         <TouchableOpacity onPress={() => {
             navigation.navigate("SingleChatScreen", { chatId: item.id, friendName: `${item.firstName} ${item.lastName}`, lastSeenTime: item.updatedAt, profileImage: item.profileImage ? item.profileImage : `https://ui-avatars.com/api/?name=${item.firstName}+${item.lastName}&background=random` })
