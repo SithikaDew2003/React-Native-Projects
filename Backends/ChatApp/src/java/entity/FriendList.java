@@ -37,6 +37,8 @@ public class FriendList implements Serializable{
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status",length = 45)
     private Status status =Status.ACTIVE;
+    @Column(name = "display_name",length = 100,nullable = true)
+    private String displayName;
 
     public FriendList() {
     }
@@ -46,6 +48,11 @@ public class FriendList implements Serializable{
         this.friendId = friendId;
     }
 
+    public FriendList(Users userId, Users friendId,String displayName) {
+        this.userId = userId;
+        this.friendId = friendId;
+        this.displayName=displayName;
+    }
     
     /**
      * @return the id
@@ -101,6 +108,20 @@ public class FriendList implements Serializable{
      */
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    /**
+     * @return the displayName
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * @param displayName the displayName to set
+     */
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
     
     

@@ -4,6 +4,7 @@
  */
 package socket;
 
+import com.google.gson.JsonObject;
 import dto.UserDTO;
 import entity.Chat;
 import entity.FriendList;
@@ -145,7 +146,7 @@ public class UserService {
                 
 
             }
-
+            s.close();
             map.put("type", "all_users");
             map.put("payload", userDTOs);
 
@@ -155,5 +156,44 @@ public class UserService {
             throw new RuntimeException(e);
         }
         
+    }
+    
+    
+    public static Map<String,Object> saveNewContact(int myId,Users user){
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        
+        JsonObject responseObject = new JsonObject();
+        responseObject.addProperty("responseStatus", Boolean.FALSE);
+        
+        
+        Criteria c1 = s.createCriteria(Users.class);
+        c1.add(Restrictions.and(Restrictions.eq("countryCode",user.getCountryCode()),
+                Restrictions.eq("contactNo", user.getContactNo())));
+        
+        
+        Users u1 = (Users)c1.uniqueResult();
+        
+        if (u1==null) {
+            responseObject.addProperty("responseStatus", "This User not in chatapp");
+        }else{
+            Users me = (Users)s.get(Users.class,myId);
+            FriendList fl = new FriendList(me, u1,user.getFirstName()+" "+user.getLastName());
+            s.save(fl);
+            
+            responseObject.addProperty("status", Boolean.TRUE);
+            
+            responseObject.addProperty("responseStatus", "This user added to friendList");
+        }
+        
+        
+        s.beginTransaction().commit();
+        s.close();
+        
+        Map<String,Object> map = new HashMap<>();
+        map.put("type", "new_contact_response_text");
+        map.put("payload", responseObject);
+        
+        
+        return map;
     }
 }

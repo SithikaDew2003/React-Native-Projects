@@ -17,6 +17,7 @@ import HomeTabs from "./HomeTabs";
 import SingleChatScreen from "./src/screens/SingleChatScreen";
 import { WebSocketProvider } from "./src/socket/WebSocketProvider";
 import NewChatsScreen from "./src/screens/NewChatScreen";
+import NewContactScreen from "./src/screens/NewContactScreen";
 
 
 
@@ -35,7 +36,8 @@ export type RootParmList = {
     lastSeenTime:string;
     profileImage:string
   },
-  NewChatScreen:undefined
+  NewChatScreen:undefined,
+  NewContactScreen:undefined
 
 }
 const Stack = createNativeStackNavigator<RootParmList>();
@@ -58,6 +60,8 @@ export default function App() {
             <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{headerShown:false}}/>
             <Stack.Screen name="SingleChatScreen" component={SingleChatScreen}/>
             <Stack.Screen name="NewChatScreen" component={NewChatsScreen}/>
+            <Stack.Screen name="NewContactScreen" component={NewContactScreen}/>
+
           </Stack.Navigator>
         </NavigationContainer>
       </UserRegistrationProvider>

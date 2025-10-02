@@ -12,6 +12,8 @@ type NewChatsScreenProp = NativeStackNavigationProp<RootParmList, "NewChatScreen
 
 export default function NewChatsScreen() {
     const navigation = useNavigation<NewChatsScreenProp>();
+    const [search, setSearch] = useState("");
+    const users=useUserList();
     useLayoutEffect(() => {
         navigation.setOptions({
             title: "",
@@ -27,7 +29,7 @@ export default function NewChatsScreen() {
                     </TouchableOpacity>
                     <View className="flex-col">
                         <Text className="text-lg font-bold">Select Contact</Text>
-                        <Text className="text-sm font-bold">10 Contact</Text>
+                        <Text className="text-sm font-bold">{users.length}</Text>
                     </View>
                 </View>
             ),
@@ -37,10 +39,10 @@ export default function NewChatsScreen() {
                 </View>
             ),
         });
-    }, [navigation]);
+    }, [navigation,users]);
 
-    const [search, setSearch] = useState("");
-    const users=useUserList();
+    
+    
     const renderItem = ({ item }: any) => (
         <TouchableOpacity onPress={() => {
             navigation.navigate("SingleChatScreen", { chatId: item.id, friendName: `${item.firstName} ${item.lastName}`, lastSeenTime: item.updatedAt, profileImage: item.profileImage ? item.profileImage : `https://ui-avatars.com/api/?name=${item.firstName}+${item.lastName}&background=random` })
@@ -98,7 +100,7 @@ export default function NewChatsScreen() {
                     />
                 </View>
                 <View className="px-2 py-2 my-2 border-b-2 border-b-green-500">
-                    <TouchableOpacity className="flex-row items-center justify-center gap-x-3 h-14">
+                    <TouchableOpacity onPress={()=>navigation.navigate("NewContactScreen")} className="flex-row items-center justify-center gap-x-3 h-14">
                         <View className="items-center justify-center w-12 h-12 bg-green-600 rounded-full">
                             <Feather name="user-plus" size={24} color="black" />
                         </View>
