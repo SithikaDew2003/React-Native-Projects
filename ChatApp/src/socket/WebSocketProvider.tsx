@@ -27,11 +27,13 @@ useEffect(()=>{
 
     socketRef.current=socket;
     socket.onopen=()=>{
+        console.log(new Date().toLocaleTimeString());
         console.log("websocket connected");
         setConnected(true);
     };
 
     socket.onclose=()=>{
+        console.log(new Date().toLocaleTimeString());
         console.log("websocket disconnected");
         setConnected(false);
     };

@@ -16,7 +16,7 @@ public class UserDTO implements Serializable{
     private int id;
     private String firstName;
     private String lastName;
- 
+    private String displayName;
     private String countryCode;
     private String contactNo;
     private String profileImage;
@@ -151,6 +151,20 @@ public class UserDTO implements Serializable{
      */
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    /**
+     * @return the displayName
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * @param displayName the displayName to set
+     */
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
     
     

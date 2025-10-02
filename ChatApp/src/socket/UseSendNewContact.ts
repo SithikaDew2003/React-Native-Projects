@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { User, WSResponse } from "./chat";
 import { useWebSocket } from "./WebSocketProvider";
+import { Alert } from "react-native";
 
 export function useSendNewContact() {
     const { sendMessage,socket } = useWebSocket();
@@ -19,6 +20,12 @@ export function useSendNewContact() {
             if (response.type === "new_contact_response_text") {
                 console.log(response.payload);
                 setResponseText(response.payload);
+
+                if (response.payload.responseStatus) {
+                    Alert.alert("Success",response.payload.message);
+                }else{
+                    Alert.alert("Warning",response.payload.message);
+                }
             }
             };
 

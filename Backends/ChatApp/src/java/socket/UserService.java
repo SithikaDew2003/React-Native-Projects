@@ -109,24 +109,19 @@ public class UserService {
 
         try {
 
-            Session s = HibernateUtil.getSessionFactory().openSession();
-            Criteria c1 = s.createCriteria(Users.class);
-            c1.add(Restrictions.ne("id", userId));
-            List<Users> users = c1.list();
+            Session s = HibernateUtil.getSessionFactory().openSession();          
             Map<String, Object> map = new HashMap();
-
             List<UserDTO> userDTOs = new ArrayList<>();
 
-            for (Users user : users) {//offline/onlne
-                Criteria c2 = s.createCriteria(FriendList.class);
-                c2.add(Restrictions.and(Restrictions.eq("friendId.id", user.getId()),
-                        Restrictions.eq("userId.id", userId),
-                        Restrictions.ne("status", Status.BLOCKED)));
-
-                FriendList u1 = (FriendList) c2.uniqueResult();//Active
-                if (u1 != null) {
-                    user.setStatus(Status.ACTIVE);//if this user already in my friend list change status to active
-                }
+            Criteria c1 = s.createCriteria(FriendList.class);
+            
+            c1.add(Restrictions.eq("userId.id", userId));
+            c1.add(Restrictions.eq("status", Status.ACTIVE));
+            List<FriendList> myFriends = c1.list();
+            
+            for (FriendList myFriend : myFriends) {//offline/onlne
+                Users user = myFriend.getFriendId();//User Object 
+                
 
                 
                 
@@ -134,6 +129,7 @@ public class UserService {
                 dto.setId(user.getId());
                 dto.setFirstName(user.getFirstName());
                 dto.setLastName(user.getLastName());
+                dto.setDisplayName(myFriend.getDisplayName()); //from friendTable
                 dto.setCountryCode(user.getCountryCode());
                 dto.setContactNo(user.getContactNo());
                 dto.setProfileImage(ProfileService.getProfileURL(user.getId()));
@@ -174,20 +170,38 @@ public class UserService {
         Users u1 = (Users)c1.uniqueResult();
         
         if (u1==null) {
-            responseObject.addProperty("responseStatus", "This User not in chatapp");
+            responseObject.addProperty("message", "This User not in chatapp");
         }else{
             Users me = (Users)s.get(Users.class,myId);
-            FriendList fl = new FriendList(me, u1,user.getFirstName()+" "+user.getLastName());
-            s.save(fl);
             
-            responseObject.addProperty("status", Boolean.TRUE);
+            //
+            Criteria c2 = s.createCriteria(FriendList.class);
+            c2.add(Restrictions.and(Restrictions.eq("userId", me),
+                    Restrictions.eq("friendId", u1)
+                    ));
             
-            responseObject.addProperty("responseStatus", "This user added to friendList");
+            FriendList friendList = (FriendList)c2.uniqueResult();
+            if (friendList==null) {
+                 FriendList fl = new FriendList(me, u1,user.getFirstName()+" "+user.getLastName());
+                 s.save(fl);
+                 
+                 responseObject.addProperty("responseStatus", Boolean.TRUE);
+                 responseObject.addProperty("message", "This user added to user list");
+                 
+            }else{
+                friendList.setDisplayName(user.getFirstName()+" "+user.getLastName());
+                s.update(friendList);
+                responseObject.addProperty("message", "This user already in friendList");
+            }
+           
+            
+            
+           
         }
         
-        
         s.beginTransaction().commit();
-        s.close();
+           s.close();
+        
         
         Map<String,Object> map = new HashMap<>();
         map.put("type", "new_contact_response_text");

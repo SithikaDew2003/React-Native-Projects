@@ -5,6 +5,7 @@
 package socket;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 import entity.Chat;
 import entity.Status;
@@ -61,6 +62,12 @@ public class ChatEndPoint {
             Map<String, Object> map = ChatEndPoint.GSON.fromJson(message, Map.class);
             String type = (String) map.get("type");
             switch (type) {
+                case "PING":{
+                    JsonObject responseObject = new JsonObject();
+                    responseObject.addProperty("type", "PONG");
+                    ChatService.sendToUser(userId, responseObject);
+                    break;
+                 }
                 case "send_chat":{
                     int fromId = (int) map.get("fromId");
                     int toId = (int) map.get("toId");
@@ -133,7 +140,8 @@ public class ChatEndPoint {
                    
                     
                     
-                    UserService.saveNewContact(userId,user);
+                    Map<String,Object> envelope = UserService.saveNewContact(userId,user);
+                    ChatService.sendToUser(userId, envelope);
                     break;
                 }
                 default:

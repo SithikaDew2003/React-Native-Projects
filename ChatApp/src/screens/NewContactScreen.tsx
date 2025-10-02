@@ -134,6 +134,7 @@ export default function NewContactScreen() {
                                 Alert.alert("Warning", phoneNoValid);
                             }else{
                                 sendData();
+                                
 
                             }
                         }} 

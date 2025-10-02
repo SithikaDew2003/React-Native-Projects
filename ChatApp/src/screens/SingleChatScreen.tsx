@@ -12,6 +12,7 @@ import { useSendChat } from "../socket/useSendChat";
 
 type SingleChatScreenProps = NativeStackScreenProps<RootParmList, "SingleChatScreen">
 
+
 type Message = {
     id: number;
     text: string;
@@ -43,13 +44,13 @@ export default function SingleChatScreen({
             headerLeft: () => (
                 <View className="flex-row items-center gap-2">
                     <TouchableOpacity className="items-center justify-center border-gray-300 rounded-full h-14 w-14 border-1">
-                    
+
                         <Image
-                            source={{ uri:profileImage }}
+                            source={{ uri: profileImage }}
                             className="w-12 h-12 rounded-full"
                         />
-                    
-                </TouchableOpacity>
+
+                    </TouchableOpacity>
                     <View className="space-y-2">
                         <Text className="font-bold text-2xl">{friendName}</Text>
                         <Text className="italic text-xs font-bold text-gray-500">
